@@ -4,12 +4,20 @@ import AppKit
     var color: NSColor?
 
     func initializeColor() {
-        guard let color = NSColor(named: "AccentColor") else {
+        // Explicitly defining the bundle of the named color enables it successful loading.
+        // It appears like the IBDesignable agent uses a different bundle.
+
+        let bundle = Bundle(for: AppDelegate.self)
+
+        guard let color = NSColor(named: "AccentColor", bundle: bundle) else {
             assertionFailure("Failed to load color named \"AccentColor\"!")
             return
         }
 
         self.color = color
+
+        wantsLayer = true
+        layer?.backgroundColor = color.cgColor
     }
 
     override init(frame frameRect: NSRect) {
@@ -19,6 +27,11 @@ import AppKit
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        initializeColor()
+    }
+
+    override func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
         initializeColor()
     }
 }
